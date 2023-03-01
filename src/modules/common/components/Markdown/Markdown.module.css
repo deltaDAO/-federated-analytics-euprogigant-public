@@ -1,0 +1,10 @@
+.markdown {
+  /* handling long text, like URLs */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+.markdown img {
+  max-width: 100%;
+}

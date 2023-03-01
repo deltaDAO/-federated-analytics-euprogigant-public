@@ -1,0 +1,29 @@
+# Do a dry run of "yarn build" without publishing
+
+name: Test Build
+
+on:
+  push:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout 🛎️
+      uses: actions/checkout@v3
+    
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16.x'
+        cache: 'yarn'
+        cache-dependency-path: './yarn.lock'
+
+    - name: Install dependencies 
+      run: yarn install --frozen-lockfile
+
+    - name: Build 🔧
+      run: |
+        PUBLIC_URL="." yarn build
+        touch out/.nojekyll

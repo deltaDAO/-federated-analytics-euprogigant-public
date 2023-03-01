@@ -1,0 +1,45 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "node": true,
+    "jest": true
+  },
+  "globals": {},
+  "ignorePatterns": ["utils/marketplace/**/*"],
+  "extends": [
+    // The order here is important because of overwrites!
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "next/core-web-vitals", // extends react, a11y and next plugins
+    "plugin:prettier/recommended" // keep this entry last to avoid rule clashes
+  ],
+  "plugins": ["@typescript-eslint", "simple-import-sort"],
+  "rules": {
+    "@typescript-eslint/no-var-requires": "warn",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "react-hooks/exhaustive-deps": "warn",
+    "simple-import-sort/imports": [
+      "warn",
+      {
+        "groups": [
+          // Side effect imports.
+          ["^\\u0000"],
+          // External packages
+          ["^@?\\w"],
+          // Internal packages and parent packages
+          ["^(@|public|src)(/.*|$)", "^", "^\\."],
+          // Style imports.
+          ["^.+\\.s?css$"]
+        ]
+      }
+    ],
+    /* ESlint rules not included in eslint:recommended by default */
+    "no-duplicate-imports": "warn",
+    "no-unneeded-ternary": "error", // Disallow a === b ? true : false
+    "no-plusplus": "error", // Disallow a[i++] = x, loops should be replaced by for..of or forEach
+    "camelcase": "warn", // Disallow const my_variable_one = 5;
+    "no-nested-ternary": "warn", // Disallow a ? b : c ? e : 1,
+    "no-else-return": "warn" // Disallow if (x) { return <div />; } else { code(); } - else block redundant
+  }
+}
