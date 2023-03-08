@@ -36,15 +36,13 @@ export const getResultModelUrls = async (
 ): Promise<string[]> => {
   if (!nonce) nonce = Date.now();
 
-  const urls = await Promise.all(
-    Object.entries(localTraining).map(async ([did, jobStatus]) => {
-      if (!jobStatus || !did) throw new Error('Invalid job status');
-
-      const providerUrl = await getAssetComputeProviderUrl(did, config);
-
-      return getResultFileUrl(jobStatus, web3, accountId, providerUrl, nonce);
-    })
-  );
+  const urls = [];
+  // Is better to process transaction one by one to prevent MetaMask from skipping transactions
+  for (const [did, jobStatus] of Object.entries(localTraining)) {
+    if (!jobStatus || !did) throw new Error('Invalid job status');
+    const providerUrl = await getAssetComputeProviderUrl(did, config);
+    urls.push(await getResultFileUrl(jobStatus, web3, accountId, providerUrl, nonce));
+  }
 
   let filteredUrls = urls.filter((s): s is string => s !== null);
   // Fix for local testing, replace localhost with provider url

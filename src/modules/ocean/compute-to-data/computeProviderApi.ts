@@ -143,13 +143,12 @@ const signProviderRequest = async (
 
   // Check if accountId corresponds to one of the automatic addresses
   const isAutomatic = accountId in web3.eth.accounts.wallet;
-  const isMetaMask = web3 && web3.currentProvider && (web3.currentProvider as any).isMetaMask;
 
-  if (isMetaMask && !isAutomatic) {
-    return await web3.eth.personal.sign(consumerMessage, accountId, password ?? '');
+  if (isAutomatic) {
+    return await web3.eth.sign(consumerMessage, accountId);
   }
 
-  return await web3.eth.sign(consumerMessage, accountId);
+  return await web3.eth.personal.sign(consumerMessage, accountId, password ?? '');
 };
 
 const noZeroX = (input: string): string => zeroXTransformer(input, false);

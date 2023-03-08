@@ -35,8 +35,9 @@ const providerOptions = {
     options: {
       infuraId,
       rpc: {
+        100: 'https://rpc.genx.minimal-gaia-x.eu',
         137: 'https://polygon-rpc.com',
-        80001: 'https://rpc-mumbai.matic.today',
+        80001: 'https://rpc-mumbai.maticvigil.com',
       },
     },
   },
@@ -106,6 +107,7 @@ export const Web3Provider: FC = ({ children }) => {
   // -----------------------------------
   // Helper: Get user balance
   // -----------------------------------
+  // TODO: In latest version of ocean the list of approvedBasedTokens and check balance for all
   const getUserBalance = useCallback(async () => {
     if (!accountId || !chainId || !web3) return;
 
