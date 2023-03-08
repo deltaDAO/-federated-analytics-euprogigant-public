@@ -1,11 +1,9 @@
-import detectEthereumProvider from '@metamask/detect-provider';
-import { LoggerInstance } from '@oceanprotocol/lib';
+import WalletConnectProvider from '@walletconnect/web3-provider';
 import { createContext, FC, useCallback, useContext, useEffect, useState } from 'react';
 import Web3 from 'web3';
+import Web3Modal, { getProviderInfo, IProviderInfo } from 'web3modal';
 
 import { getOceanBalance } from '@/modules/ocean';
-
-declare let window: any;
 
 interface UserBalance {
   eth: string;
@@ -15,6 +13,7 @@ interface UserBalance {
 interface Web3ProviderValue {
   web3: Web3 | undefined;
   web3Provider: any;
+  web3ProviderInfo: IProviderInfo | undefined;
   accountId: string | undefined;
   balance: UserBalance | undefined;
   chainId: number | undefined;
@@ -22,10 +21,31 @@ interface Web3ProviderValue {
   web3Loading: boolean;
   isSupportedOceanNetwork: boolean;
   connect: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const refreshInterval = 20000; // 20 sec.
-export const supportedChainIds = [100];
+export const supportedChainIds = [8996, 80001, 100];
+
+const infuraId = process.env.NEXT_PUBLIC_INFURA_PROJECT_ID;
+
+const providerOptions = {
+  walletconnect: {
+    package: WalletConnectProvider,
+    options: {
+      infuraId,
+      rpc: {
+        137: 'https://polygon-rpc.com',
+        80001: 'https://rpc-mumbai.matic.today',
+      },
+    },
+  },
+};
+
+export const web3ModalOpts = {
+  cacheProvider: true,
+  providerOptions,
+};
 
 // Context
 const Web3Context = createContext({} as Web3ProviderValue);
@@ -37,6 +57,8 @@ export const useWeb3 = (): Web3ProviderValue => useContext(Web3Context);
 export const Web3Provider: FC = ({ children }) => {
   const [web3, setWeb3] = useState<Web3>();
   const [web3Provider, setWeb3Provider] = useState<any>();
+  const [web3Modal, setWeb3Modal] = useState<Web3Modal>();
+  const [web3ProviderInfo, setWeb3ProviderInfo] = useState<IProviderInfo>();
   const [chainId, setChainId] = useState<number>();
   const [block, setBlock] = useState<number>();
   const [accountId, setAccountId] = useState<string>();
@@ -51,22 +73,18 @@ export const Web3Provider: FC = ({ children }) => {
   // Helper: connect to web3
   // -----------------------------------
   const connect = useCallback(async () => {
+    if (!web3Modal) {
+      setWeb3Loading(false);
+      return;
+    }
     try {
       setWeb3Loading(true);
       console.log('[web3] Connecting Web3...');
 
-      const { ethereum } = window;
+      const provider = await web3Modal.connect();
+      setWeb3Provider(provider);
 
-      if (!ethereum) {
-        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
-
-        return;
-      }
-
-      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-      console.log('[web3] Metamask connected with accounts', accounts);
-
-      const web3 = new Web3(ethereum);
+      const web3 = new Web3(provider);
       setWeb3(web3);
       console.log('[web3] Web3 created.', web3);
 
@@ -78,11 +96,12 @@ export const Web3Provider: FC = ({ children }) => {
       setAccountId(web3.utils.toChecksumAddress(accountId));
       console.log('[web3] account id', accountId);
     } catch (error) {
-      console.log('[web3] Error: ', error);
+      console.error('[web3] Error: ', error);
+      await web3Modal?.clearCachedProvider();
     } finally {
       setWeb3Loading(false);
     }
-  }, []);
+  }, [web3Modal]);
 
   // -----------------------------------
   // Helper: Get user balance
@@ -96,11 +115,42 @@ export const Web3Provider: FC = ({ children }) => {
         ocean: await getOceanBalance(accountId, chainId, web3),
       };
       setBalance(balance);
-      // console.log("[web3] Balance: ", balance);
-    } catch (error: any) {
-      LoggerInstance.error('[web3] Error: ', error.message);
+      // console.log('[web3] Balance: ', balance);
+    } catch (error) {
+      console.error('[web3] Error: ', error);
     }
   }, [accountId, chainId, web3]);
+
+  // -----------------------------------
+  // Create initial Web3Modal instance
+  // -----------------------------------
+  useEffect(() => {
+    if (web3Modal) {
+      setWeb3Loading(false);
+      return;
+    }
+
+    async function init() {
+      // note: needs artificial await here so the log message is reached and output
+      const web3ModalInstance = await new Web3Modal(web3ModalOpts);
+      setWeb3Modal(web3ModalInstance);
+      console.log('[web3] Web3Modal instance created.', web3ModalInstance);
+    }
+    init();
+  }, [connect, web3Modal]);
+
+  // -----------------------------------
+  // Reconnect automatically for returning users
+  // -----------------------------------
+  useEffect(() => {
+    async function connectCached() {
+      if (!web3Modal || !web3Modal.cachedProvider) return;
+      console.log('[web3] Connecting to cached provider: ', web3Modal.cachedProvider);
+      await connect();
+    }
+
+    connectCached();
+  }, [connect, web3Modal]);
 
   // -----------------------------------
   // Get and set user balance
@@ -129,6 +179,29 @@ export const Web3Provider: FC = ({ children }) => {
     }
     getBlock();
   }, [web3, chainId]);
+
+  // -----------------------------------
+  // Get and set web3 provider info
+  // -----------------------------------
+  // Workaround cause getInjectedProviderName() always returns `MetaMask`
+  // https://github.com/oceanprotocol/market/issues/332
+  useEffect(() => {
+    if (!web3Provider) return;
+
+    const providerInfo = getProviderInfo(web3Provider);
+    setWeb3ProviderInfo(providerInfo);
+  }, [web3Provider]);
+
+  // -----------------------------------
+  // Logout helper
+  // -----------------------------------
+  async function logout() {
+    if ((web3?.currentProvider as any)?.close) {
+      await (web3?.currentProvider as any).close();
+    }
+
+    await web3Modal?.clearCachedProvider();
+  }
 
   // -----------------------------------
   // Get valid Networks and set isSupportedOceanNetwork
@@ -167,21 +240,12 @@ export const Web3Provider: FC = ({ children }) => {
     };
   }, [web3Provider]);
 
-  // -----------------------------------
-  // Detect provider - window.ethereum
-  // -----------------------------------
-  useEffect(() => {
-    detectEthereumProvider().then((provider) => {
-      if (!provider) console.log('Please install MetaMask!');
-      setWeb3Provider(provider);
-    });
-  }, []);
-
   return (
     <Web3Context.Provider
       value={{
         web3,
         web3Provider,
+        web3ProviderInfo,
         accountId,
         balance,
         chainId,
@@ -189,6 +253,7 @@ export const Web3Provider: FC = ({ children }) => {
         web3Loading,
         isSupportedOceanNetwork,
         connect,
+        logout,
       }}
     >
       {children}

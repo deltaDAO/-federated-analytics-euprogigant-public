@@ -38,13 +38,8 @@ export const ConnectButton = () => {
       {accountId ? (
         <AccountButton />
       ) : (
-        <Button
-          onClick={activate}
-          size="md"
-          variant="outline"
-          leftIcon={<Image src="/assets/metamask-fox.svg" height={32} width={32} alt="metamask" />}
-        >
-          Connect
+        <Button onClick={activate} size="md" variant="outline">
+          Connect Wallet
         </Button>
       )}
 

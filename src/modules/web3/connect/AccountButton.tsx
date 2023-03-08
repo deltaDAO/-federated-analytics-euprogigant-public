@@ -19,7 +19,7 @@ const useStyles = createStyles((theme) => ({
 
 export const AccountButton = () => {
   const { classes } = useStyles();
-  const { accountId, isSupportedOceanNetwork, balance, chainId } = useWeb3();
+  const { accountId, isSupportedOceanNetwork, balance, chainId, logout } = useWeb3();
   const [showModal, modalHandler] = useDisclosure(false);
 
   if (!isSupportedOceanNetwork) {
@@ -67,6 +67,17 @@ export const AccountButton = () => {
             </>
           )}
         </div>
+        <Button
+          mt="xl"
+          size="sm"
+          color="red"
+          onClick={() => {
+            logout();
+            location.reload();
+          }}
+        >
+          Disconnect
+        </Button>
       </Modal>
       <Button size="md" onClick={() => modalHandler.open()} leftIcon={<IconUser />}>
         {/* {accountId && chainId && `${chainId}:${shortenAddress(accountId)}`} */}
