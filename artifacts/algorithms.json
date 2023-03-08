@@ -9,7 +9,7 @@
           "aggregation": "did:op:f6e2001bc3802a982f7de186a145c86fd00eeeefc4bee103fa8ede3ae6201c82",
           "emptyDataset": "did:op:9c544f33b57541ca70297d597fc15a5a3dabf745c8bf90795d4e3b99875b954b"
         },
-        "hasParameters": false
+        "hasParameters": true
       }
     }
   }

@@ -2,6 +2,7 @@ import { Box, Button, Group, Tooltip } from '@mantine/core';
 import { FC, useCallback, useEffect, useState } from 'react';
 
 import { useWeb3 } from '@/modules/web3';
+import { SerialNumber } from './SerialNumber';
 
 interface Props {
   algorithm: any;
@@ -16,8 +17,8 @@ export const PickParams: FC<Props> = ({ algorithm, prevStep, startLearning }) =>
 
   // can submit only when params are set
   useEffect(() => {
-    if (algorithm.algoConfig.id === 'felt') {
-      setCanSubmit(Object.keys(params).includes('target_column') && Object.keys(params).includes('model_definition'));
+    if (algorithm.algoConfig.id === 'felt-mean') {
+      setCanSubmit(Object.keys(params).includes('serial_number'));
     }
   }, [params, algorithm.algoConfig.id]);
 
@@ -29,8 +30,8 @@ export const PickParams: FC<Props> = ({ algorithm, prevStep, startLearning }) =>
     <Box sx={{ maxWidth: 500 }} mx="auto">
       {algorithm.algoConfig.hasParameters ? (
         <>
-          {algorithm.algoConfig.id === 'felt-mean' && <p>TODO params</p>}
-          {algorithm.algoConfig.id !== 'felt' && <p>TODO params for other algorithms</p>}
+          {algorithm.algoConfig.id === 'felt-mean' && <SerialNumber params={params} setParams={setParams} />}
+          {algorithm.algoConfig.id !== 'felt-mean' && <p>TODO params for other algorithms</p>}
         </>
       ) : (
         <p>No params</p>
