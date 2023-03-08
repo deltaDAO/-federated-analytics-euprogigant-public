@@ -18,21 +18,21 @@ export async function downloadAggregationFinalModel(
     const providerUri = await getAssetComputeProviderUrl(aggregationJob.algoDID, getOceanConfig(chainId));
 
     try {
-      const finalModelUrl = await getResultFileUrl(aggregationJob, web3, accountId, providerUri);
+      const finalModelUrl = await getResultFileUrl(aggregationJob, web3, accountId, providerUri, null, 'model.pdf');
       console.log('Final model', finalModelUrl);
       if (finalModelUrl) {
         // Add seeds to final model file
-        const data = await fetch(finalModelUrl).then((res) => res.json());
+        const data = await fetch(finalModelUrl).then((res) => res.blob());
         // TODO: Do we need to check that all ids/seeds are valid (not null)?
-        const seeds = job.aggregation[aggregationId]?.localTrainings.map((id) => job.localTraining[id]?.seed);
-        if (Array.isArray(data.model_definition)) {
-          data.model_definition.map((model: Record<string, any>) => (model.seeds = seeds));
-        } else {
-          data.seeds = seeds;
-        }
+        // const seeds = job.aggregation[aggregationId]?.localTrainings.map((id) => job.localTraining[id]?.seed);
+        // if (Array.isArray(data.model_definition)) {
+        //   data.model_definition.map((model: Record<string, any>) => (model.seeds = seeds));
+        // } else {
+        //   data.seeds = seeds;
+        // }
 
-        const file = new File([JSON.stringify(data)], `final-model-${job.name}.json`, {
-          type: 'application/json;charset=utf-8',
+        const file = new File([data], `final-model-${job.name}.pdf`, {
+          type: 'application/pdf;charset=utf-8',
         });
         saveAs(file);
       } else {
