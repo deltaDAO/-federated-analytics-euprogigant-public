@@ -1,4 +1,5 @@
 import { AppShell, Container, createStyles, MantineProvider, MantineThemeOverride } from '@mantine/core';
+import { useRouter } from 'next/router';
 import { FC } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
@@ -6,6 +7,7 @@ import { CustomFooter } from '@/modules/footer';
 import { CustomHeader } from '@/modules/header';
 import { TransactionProvider } from '@/modules/transaction';
 import { Web3Provider } from '@/modules/web3';
+import { FundedBy } from '../fundedBy/FundedBy';
 
 const useStyles = createStyles((theme) => ({
   content: {
@@ -43,6 +45,7 @@ const queryClient = new QueryClient({
 
 export const AppLayout: FC = ({ children }) => {
   const { classes } = useStyles();
+  const router = useRouter();
 
   return (
     <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
@@ -53,6 +56,7 @@ export const AppLayout: FC = ({ children }) => {
               <Container className={classes.content} size={layoutWidth} px="xl" py="xl">
                 {children}
               </Container>
+              {router.pathname === '/' && <FundedBy />}
             </AppShell>
           </TransactionProvider>
         </Web3Provider>
