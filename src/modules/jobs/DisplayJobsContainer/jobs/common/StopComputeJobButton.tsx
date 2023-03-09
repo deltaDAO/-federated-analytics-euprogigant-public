@@ -3,7 +3,7 @@ import { ComputeJob } from '@oceanprotocol/lib';
 import { FC } from 'react';
 
 import { isJobRunning, stopComputeJob, useOceanConfig } from '@/modules/ocean';
-import { useDefaultAccount, useWeb3 } from '@/modules/web3';
+import { useDefaultAccount } from '@/modules/web3';
 
 export interface StopComputeJobButtonProps {
   feltJobChainId: number;
@@ -18,8 +18,7 @@ export const StopComputeJobButton: FC<StopComputeJobButtonProps> = ({
   computeJob,
   actionsAllowed,
 }) => {
-  const { accountId } = useDefaultAccount();
-  const { web3 } = useWeb3();
+  const { web3, accountId } = useDefaultAccount();
   const config = useOceanConfig();
 
   if (!computeJob || !isJobRunning(computeJob)) {

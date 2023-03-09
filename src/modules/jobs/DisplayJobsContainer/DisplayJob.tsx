@@ -16,8 +16,8 @@ interface DisplayJobProps {
 const refreshIntervalMs = 5000;
 
 export const DisplayJob: FC<DisplayJobProps> = ({ job, onReload }) => {
-  const { accountId } = useDefaultAccount();
-  const { web3, chainId } = useWeb3();
+  const { web3, accountId } = useDefaultAccount();
+  const { chainId } = useWeb3();
   const config = useOceanConfig();
   const chainName = getChainName(job.chainId);
   const [anythingToReload, setAnythingToReload] = useState(false);

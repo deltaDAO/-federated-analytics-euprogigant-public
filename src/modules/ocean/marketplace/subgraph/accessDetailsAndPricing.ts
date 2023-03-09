@@ -4,7 +4,7 @@ import { OperationResult } from 'urql';
 import Web3 from 'web3';
 
 import { AccessDetails, AssetExtended, getOceanConfig, OrderPriceAndFees } from '../..';
-import { getReadOnlyWeb3 } from '../../getReadOnlyWeb3';
+import { getNodeWeb3 } from '../../getNodeWeb3';
 import { getTokenPriceQuery } from './queries/getTokenPriceQuery';
 import { fetchData } from './subgraphApi';
 
@@ -173,7 +173,7 @@ export async function getFixedBuyPrice(accessDetails: AccessDetails, chainId = 1
   if (!web3 && !chainId) throw new Error("web3 and chainId can't be undefined at the same time!");
 
   if (!web3) {
-    web3 = getReadOnlyWeb3(chainId);
+    web3 = getNodeWeb3(chainId);
   }
 
   const config = getOceanConfig(chainId);

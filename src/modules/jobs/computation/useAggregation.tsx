@@ -30,8 +30,8 @@ export const useAggregation = () => {
 
     return transaction.run('Starting aggregation', [
       {
-        title: 'Publish dataset',
-        description: 'Publishing dataset...',
+        title: 'Collect results',
+        description: 'Collecting results from individual dataset...',
         icon: <Upload />,
         action: aggregation.publishDataset.bind(aggregation),
       },

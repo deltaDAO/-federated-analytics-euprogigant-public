@@ -13,12 +13,12 @@ import {
   ProviderComputeInitialize,
   ProviderComputeInitializeResults,
   ProviderInstance,
-  sleep,
+  sleep
 } from '@oceanprotocol/lib';
 import Web3 from 'web3';
 
 import { AssetExtended } from '../asset';
-import { getReadOnlyWeb3 } from '../getReadOnlyWeb3';
+import { getNodeWeb3 } from '../getNodeWeb3';
 import { getAssetWithAccessDetails, getOrderPriceAndFees } from '../marketplace';
 import { checkProviderVersion, computeStart } from './computeProviderApi';
 import { getAssetComputeProviderUrl } from './getAssetComputeProviderUrl';
@@ -59,7 +59,7 @@ export class C2D {
     private algoData: Record<string, any>
   ) {
     this.datatoken = new Datatoken(web3);
-    this.readOnlyDatatoken = new Datatoken(getReadOnlyWeb3(config.chainId));
+    this.readOnlyDatatoken = new Datatoken(getNodeWeb3(config.chainId));
 
     if (!config.metadataCacheUri) throw new Error('No metadata cache url found');
 

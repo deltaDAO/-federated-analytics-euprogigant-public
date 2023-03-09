@@ -16,8 +16,8 @@ export const AlgorithmLogDownloadButton: FC<AlgorithmLogDownloadButtonProps> = (
   computeJob,
   actionsAllowed,
 }) => {
-  const { accountId } = useDefaultAccount();
-  const { web3, chainId } = useWeb3();
+  const { web3, accountId } = useDefaultAccount();
+  const { chainId } = useWeb3();
 
   if (!computeJob || isJobRunning(computeJob)) {
     return null;

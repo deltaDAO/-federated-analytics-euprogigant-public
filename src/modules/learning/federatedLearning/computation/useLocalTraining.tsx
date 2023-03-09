@@ -2,15 +2,14 @@ import { Cloud, DollarSign, Key } from 'react-feather';
 
 import { useOceanConfig } from '@/modules/ocean';
 import { useTransactionContext } from '@/modules/transaction';
-import { useDefaultAccount, useWeb3 } from '@/modules/web3';
+import { useDefaultAccount } from '@/modules/web3';
 import { LocalTraining } from './LocalTraining';
 
 /** Actions to start 1 local training */
 export const useLocalTraining = () => {
   const transaction = useTransactionContext();
   const config = useOceanConfig();
-  const { accountId } = useDefaultAccount();
-  const { web3 } = useWeb3();
+  const { web3, accountId } = useDefaultAccount();
 
   const localTraining = async (dataDid: string, algDid: string, params: Record<string, any>, feltJobId: string) => {
     if (!accountId || !web3) throw new Error('No accountId or web3');
