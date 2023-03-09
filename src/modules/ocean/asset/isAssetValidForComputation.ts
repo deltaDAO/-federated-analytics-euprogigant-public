@@ -20,9 +20,8 @@ export const isAssetValidForComputation = (ddo: Asset, chainId: number): { isVal
       (s) =>
         s.type === 'compute' &&
         s.compute &&
-        (s.compute.publisherTrustedAlgorithmPublishers === null ||
-          s.compute.publisherTrustedAlgorithmPublishers.length === 0) &&
-        (s.compute.publisherTrustedAlgorithms === null || s.compute.publisherTrustedAlgorithms.length === 0)
+        ((s.compute.publisherTrustedAlgorithmPublishers && s.compute.publisherTrustedAlgorithmPublishers.length > 0) ||
+        (s.compute.publisherTrustedAlgorithms && s.compute.publisherTrustedAlgorithms.length > 0))
     )
   ) {
     const errorMsg = 'Dataset has to allow algorithms to run on it!';

@@ -23,6 +23,19 @@ const updateStorage = <T>(key: string, update: (_: T) => T, defaultValue: T): T 
   return updated;
 };
 
+// Functions for managing felt-autokey record in local storage
+const feltKeyName = 'euporgigant-key';
+
+export const writeFeltAutoKey = (encryptedKey: string) => writeStorage(feltKeyName, encryptedKey);
+
+export const readFeltAutoKey = (): string | null => {
+  const key = readStorage(feltKeyName, null);
+
+  return key ? (key as string) : null;
+};
+
+export const removeFeltAutoKey = () => writeStorage(feltKeyName, null);
+
 // Functions for managing felt-jobs record in local storage
 const updateFeltJobs = (update: (_: FeltJobs) => FeltJobs) => updateStorage('euprogigant-jobs', update, {});
 

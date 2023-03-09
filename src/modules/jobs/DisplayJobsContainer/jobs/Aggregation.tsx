@@ -19,8 +19,8 @@ interface AggregationProps {
 }
 
 export const Aggregation: FC<AggregationProps> = ({ job, reload, actionsAllowed, excludeInAggregation }) => {
-  const { accountId } = useDefaultAccount();
-  const { web3, chainId } = useWeb3();
+  const { web3, accountId } = useDefaultAccount();
+  const { chainId } = useWeb3();
   const { aggregation } = useAggregation();
 
   const localTrainingsDone = Object.values(job.localTraining).every(

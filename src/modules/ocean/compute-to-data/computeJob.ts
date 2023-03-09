@@ -95,7 +95,7 @@ export const stopComputeJob = async (
 export const checkForModel = (job: ComputeJob | null): ComputeJob | null => {
   if (job === null) return null;
   if (job.status !== 70) return job;
-  if (job.results.some((res) => res.filename === 'model')) return job;
+  if (job.results.some((res) => ['model', 'model.pdf'].includes(res.filename))) return job;
 
   return {
     ...job,

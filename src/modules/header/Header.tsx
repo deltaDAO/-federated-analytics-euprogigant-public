@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 
 import { layoutWidth } from '@/modules/app';
-import { ConnectButton } from '@/modules/web3';
+import { ConnectButton, EnableAutomationButton } from '@/modules/web3';
 
 const useStyles = createStyles(() => ({ root: { margin: '32px 0' } }));
 
@@ -18,7 +18,10 @@ export const CustomHeader = () => {
           <div onClick={() => router.push('/')} style={{ cursor: 'pointer' }}>
             <Image src="/assets/euprogigant-logo.png" height={87} width={190} alt="Logo" />
           </div>
-          <ConnectButton />
+          <Group>
+            <EnableAutomationButton />
+            <ConnectButton />
+          </Group>
         </Group>
       </Container>
     </Header>

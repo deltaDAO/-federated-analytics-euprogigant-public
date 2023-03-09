@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { CustomFooter } from '@/modules/footer';
 import { CustomHeader } from '@/modules/header';
 import { TransactionProvider } from '@/modules/transaction';
-import { Web3Provider } from '@/modules/web3';
+import { AutomationProvider, Web3Provider } from '@/modules/web3';
 
 const useStyles = createStyles((theme) => ({
   content: {
@@ -48,13 +48,15 @@ export const AppLayout: FC = ({ children }) => {
     <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
       <QueryClientProvider client={queryClient}>
         <Web3Provider>
-          <TransactionProvider>
-            <AppShell header={<CustomHeader />} footer={<CustomFooter />}>
-              <Container className={classes.content} size={layoutWidth} px="xl" py="xl">
-                {children}
-              </Container>
-            </AppShell>
-          </TransactionProvider>
+          <AutomationProvider>
+            <TransactionProvider>
+              <AppShell header={<CustomHeader />} footer={<CustomFooter />}>
+                <Container className={classes.content} size={layoutWidth} px="xl" py="xl">
+                  {children}
+                </Container>
+              </AppShell>
+            </TransactionProvider>
+          </AutomationProvider>
         </Web3Provider>
       </QueryClientProvider>
     </MantineProvider>

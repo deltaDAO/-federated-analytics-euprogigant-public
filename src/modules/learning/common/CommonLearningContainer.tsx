@@ -26,8 +26,8 @@ const useStyles = createStyles((theme) => ({
 
 export const CommonLearningContainer: FC = () => {
   const { classes } = useStyles();
-  const { accountId } = useDefaultAccount();
-  const { web3, chainId, isSupportedOceanNetwork } = useWeb3();
+  const { web3, accountId } = useDefaultAccount();
+  const { chainId, isSupportedOceanNetwork } = useWeb3();
   const { localTraining } = useLocalTraining();
 
   const [name, setName] = useState('');
