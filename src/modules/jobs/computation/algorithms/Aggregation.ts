@@ -54,7 +54,7 @@ export class Aggregation {
     console.group('Aggregation - Initializing compute');
 
     // TODO move this somewhere else in config
-    const dataDID = getFederatedTrainingAlgorithms(this.config.chainId)['felt-mean'].assets.emptyDataset;
+    const dataDID = getFederatedTrainingAlgorithms(this.config.chainId)['part-matching'].assets.emptyDataset;
     console.log('emptyDataset', dataDID);
 
     this.C2D = new C2D(this.config, this.accountId, this.web3, dataDID, this.algoDID, { model_urls: this.urls });

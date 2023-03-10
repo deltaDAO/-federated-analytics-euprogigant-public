@@ -1,19 +1,9 @@
 {
   "100": {
     "federated": {
-      "felt-mean": {
-        "id": "felt-mean",
-        "name": "FELT Federated Training - MEAN",
-        "assets": {
-          "training": "did:op:799924e4c9fd3a6dfcd2ec5884dddf26c6d38c8199f2097e5dc971afe8eea419",
-          "aggregation": "did:op:f6e2001bc3802a982f7de186a145c86fd00eeeefc4bee103fa8ede3ae6201c82",
-          "emptyDataset": "did:op:9c544f33b57541ca70297d597fc15a5a3dabf745c8bf90795d4e3b99875b954b"
-        },
-        "hasParameters": false
-      },
-      "matching-test": {
-        "id": "part-matching-test",
-        "name": "Part Matching Test",
+      "part-matching": {
+        "id": "part-matching",
+        "name": "Part Matching",
         "assets": {
           "training": "did:op:f0b68b3ac85adb7c2f59803798ea2b0f1c524a7e790b7952124d305c20f08d97",
           "aggregation": "did:op:746461279d924453fa819c7a4e72f9236a77512c0116fcd047fd2b84dd74c766",

@@ -17,7 +17,7 @@ export const PickParams: FC<Props> = ({ algorithm, prevStep, startLearning }) =>
 
   // can submit only when params are set
   useEffect(() => {
-    if (['felt-mean', 'part-matching-test'].includes(algorithm.algoConfig.id)) {
+    if (['felt-mean', 'part-matching'].includes(algorithm.algoConfig.id)) {
       setCanSubmit(Object.keys(params).includes('serial_number'));
     }
   }, [params, algorithm.algoConfig.id]);
@@ -30,7 +30,7 @@ export const PickParams: FC<Props> = ({ algorithm, prevStep, startLearning }) =>
     <Box sx={{ maxWidth: 500 }} mx="auto">
       {algorithm.algoConfig.hasParameters ? (
         <>
-          {['felt-mean', 'part-matching-test'].includes(algorithm.algoConfig.id) ? (
+          {['felt-mean', 'part-matching'].includes(algorithm.algoConfig.id) ? (
             <SerialNumber params={params} setParams={setParams} />
           ) : (
             <p>TODO params for other algorithms</p>

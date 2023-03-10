@@ -17,16 +17,16 @@ const Home: NextPage = () => (
         padding: '60px 140px',
       }}
     >
-      <div style={{ maxWidth: 400, display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ maxWidth: 800, display: 'flex', gap: 20, alignItems: 'flex-start' }}>
         <LinkCard
-          title="Start federated analytics"
-          description="Run federeted analytics on multiple distributed dataset"
+          title="Part Matching"
+          description="Match a given part to data of multiple suppliers"
           href={appRoutes.Multiple.href}
           iconSrc="/assets/icons/page/create-project.svg"
         />
         <LinkCard
-          title="Launched Jobs"
-          description="See all the jobs you have launched"
+          title="Launched Matchings"
+          description="See all the matchings you have launched"
           href={appRoutes.Jobs.href}
           iconSrc="/assets/icons/page/projects.svg"
         />

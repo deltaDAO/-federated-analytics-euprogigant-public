@@ -15,7 +15,7 @@ const LaunchedJobs: NextPage = () => {
       <Group mb="xl">
         <Image src="/assets/icons/page/projects.svg" height={60} width={60} alt="Launched Jobs" />
         <Text size="xl" weight={600}>
-          Launched jobs
+          Launched Matchings
         </Text>
       </Group>
 

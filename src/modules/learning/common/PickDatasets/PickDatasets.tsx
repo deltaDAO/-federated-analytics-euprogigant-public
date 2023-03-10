@@ -74,7 +74,7 @@ export const PickDatasets: FC<PickDatasetsProps> = ({
     <>
       <Box sx={{ maxWidth: 500 }} mx="auto">
         <TextInput
-          placeholder="Average price of houses in Boston"
+          placeholder="Part Matching Run"
           label="Name"
           required
           value={name}
@@ -85,7 +85,7 @@ export const PickDatasets: FC<PickDatasetsProps> = ({
           DIDs
         </Text>
         <Text color="dimmed" size="xs">
-          Search and pick dataset(s) to use for your training.
+          Search and pick suppliers to use for part matching.
         </Text>
         {datasetErrors && (
           <Text color="red" size="xs">

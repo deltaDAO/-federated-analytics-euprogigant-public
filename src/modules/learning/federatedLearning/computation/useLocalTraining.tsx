@@ -17,7 +17,7 @@ export const useLocalTraining = () => {
     const localTraining = new LocalTraining(config, accountId, web3, dataDid, algDid, params, feltJobId);
     const shortenDataDid = dataDid.slice(0, 11) + '...' + dataDid.slice(-6);
 
-    return transaction.run(`Starting training on ${shortenDataDid}`, [
+    return transaction.run(`Starting matching process for ${shortenDataDid}`, [
       {
         title: 'Initialize',
         description: 'Configuring and initializing compute...',
@@ -26,7 +26,7 @@ export const useLocalTraining = () => {
       },
       {
         title: 'Handle orders',
-        description: 'Handling dataset & algorithm order...',
+        description: 'Handling service orders...',
         icon: <DollarSign />,
         action: localTraining.handleOrders.bind(localTraining),
       },

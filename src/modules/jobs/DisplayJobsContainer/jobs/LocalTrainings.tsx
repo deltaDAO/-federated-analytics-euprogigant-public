@@ -22,7 +22,7 @@ export const LocalTrainings: FC<Props> = ({
 }) => {
   return (
     <>
-      <Text weight={700}>Local training:</Text>
+      <Text weight={700}>Local Scoring:</Text>
       <Table>
         <thead>
           <tr>

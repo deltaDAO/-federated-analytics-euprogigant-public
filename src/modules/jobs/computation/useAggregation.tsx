@@ -30,8 +30,8 @@ export const useAggregation = () => {
 
     return transaction.run('Starting aggregation', [
       {
-        title: 'Collect results',
-        description: 'Collecting results from individual dataset...',
+        title: 'Collect scores',
+        description: 'Collecting scores of local scorings...',
         icon: <Upload />,
         action: aggregation.publishDataset.bind(aggregation),
       },
@@ -43,7 +43,7 @@ export const useAggregation = () => {
       },
       {
         title: 'Handle orders',
-        description: 'Handling dataset & algorithm order...',
+        description: 'Handling service orders...',
         icon: <DollarSign />,
         action: aggregation.handleOrders.bind(aggregation),
       },

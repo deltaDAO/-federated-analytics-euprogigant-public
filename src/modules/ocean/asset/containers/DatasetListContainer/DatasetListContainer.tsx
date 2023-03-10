@@ -37,7 +37,7 @@ export const DatasetListContainer: FC<DatasetListContainerProps> = ({
         mt="lg"
         sx={{ width: '100%', maxWidth: 500 }}
         icon={<IconSearch />}
-        placeholder="Search datasets"
+        placeholder="Search suppliers"
         value={search}
         onChange={(event: ChangeEvent<HTMLInputElement>) => setSearch(event.target.value)}
         rightSection={isLoading || isFetching ? <Loader size="sm" /> : null}

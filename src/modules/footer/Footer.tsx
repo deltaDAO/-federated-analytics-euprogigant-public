@@ -58,23 +58,23 @@ export const CustomFooter = () => {
         </Badge>
         <Container mx={0} px={0}>
           <Group className={classes.logoContainer}>
-            <Link href="https://feltlabs.ai/" passHref>
-              <Group align="center" style={{ cursor: 'pointer' }}>
-                <Text size="md" color="dimmed">
-                  Created by
-                </Text>
-                <Image src="/assets/logo-text.svg" height={40} width={100} alt="Logo" />
-              </Group>
-            </Link>
-            <Link href="https://delta-dao.com/" passHref>
-              <Group align="center" style={{ cursor: 'pointer' }}>
-                <Text size="md" color="dimmed">
-                  Powered by
-                </Text>
-                <Image src="/assets/deltaDAO_Logo_RGB_positiv.svg" height={70} width={130} alt="Logo" />
-              </Group>
-            </Link>
+            <Group align="center">
+              <Text size="md" color="dimmed">
+                Powered by
+              </Text>
+              <Link href="https://feltlabs.ai/" passHref>
+                <Group style={{ cursor: 'pointer' }}>
+                  <Image src="/assets/logo-text.svg" height={40} width={100} alt="Logo" />
+                </Group>
+              </Link>
+              <Link href="https://delta-dao.com/" passHref>
+                <Group style={{ cursor: 'pointer' }}>
+                  <Image src="/assets/deltaDAO_Logo_RGB_positiv.svg" height={70} width={130} alt="Logo" />
+                </Group>
+              </Link>
+            </Group>
           </Group>
+
           <Group position="center" className={classes.links}>
             {footerLinks.map((link) => (
               <Anchor<'a'> color="dimmed" key={link.label} href={link.link} size="sm">

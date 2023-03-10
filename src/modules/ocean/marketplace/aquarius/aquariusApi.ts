@@ -4,6 +4,8 @@ import { AssetExtended } from '../../asset';
 import { useOceanConfig } from '../../config';
 import { getQuery } from './utils';
 
+import { whitelist } from '@artifacts/datasets.json';
+
 /* eslint-disable camelcase */
 
 class AquariusApi {
@@ -49,6 +51,7 @@ class AquariusApi {
               //{ bool: { must_not: [{ term: { 'nft.state': 5 } }] } },
               { term: { 'nft.state': 0 } }, // must be active state
               { term: { 'services.type': 'compute' } },
+              { terms: { _id: whitelist } },
             ],
           },
         },

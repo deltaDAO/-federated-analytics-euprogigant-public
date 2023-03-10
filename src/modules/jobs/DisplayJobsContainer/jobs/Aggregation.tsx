@@ -104,7 +104,7 @@ export const Aggregation: FC<AggregationProps> = ({ job, reload, actionsAllowed,
             </span>
           </Tooltip>
         ) : (
-          <Text>Waiting for local trainings to finish</Text>
+          <Text>Waiting for scorings to finish</Text>
         )}
       </Center>
     </>

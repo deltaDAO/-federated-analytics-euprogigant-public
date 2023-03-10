@@ -97,7 +97,7 @@ export const CommonLearningContainer: FC = () => {
   return (
     <Container className={classes.root}>
       <Stepper active={active} onStepClick={setActive} breakpoint="sm">
-        <Stepper.Step label="Step 1" description="Choose datasets" allowStepSelect={active > 0 && active < 3}>
+        <Stepper.Step label="Step 1" description="Choose suppliers" allowStepSelect={active > 0 && active < 3}>
           <PickDatasets
             isSingleChoiceOnly={false}
             name={name}
@@ -116,7 +116,7 @@ export const CommonLearningContainer: FC = () => {
             prevStep={prevStep}
           />
         </Stepper.Step>
-        <Stepper.Step label="Step 3" description="Customize parameters" allowStepSelect={false}>
+        <Stepper.Step label="Step 3" description="Insert serialnumber" allowStepSelect={false}>
           <PickParams algorithm={algorithmSelected} prevStep={prevStep} startLearning={startLearning} />
         </Stepper.Step>
         <Stepper.Completed>
@@ -124,9 +124,9 @@ export const CommonLearningContainer: FC = () => {
             <>
               <div style={{ fontSize: 92, margin: 'auto', textAlign: 'center' }}>🎉</div>
               <Text align="center">
-                Your job was successfully started.
+                Part matching successfully started.
                 <br />
-                You can see the progress in the <Link href="/jobs">Launched jobs</Link>
+                You can see the progress in the <Link href="/jobs">Launched Matchings</Link> overview.
               </Text>
             </>
           ) : (

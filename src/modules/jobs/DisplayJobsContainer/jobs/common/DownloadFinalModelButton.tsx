@@ -23,7 +23,7 @@ export const DownloadFinalModelButton: FC<DownloadFinalModelButtonProps> = ({
     <Tooltip withArrow label={`Connect with creator account to chain ${feltJobChainId}`} disabled={actionsAllowed}>
       <span>
         <Button disabled={!actionsAllowed} onClick={downloadFinalModel} leftIcon={<Download size={16} />}>
-          Download final model
+          Download matching report
         </Button>
       </span>
     </Tooltip>

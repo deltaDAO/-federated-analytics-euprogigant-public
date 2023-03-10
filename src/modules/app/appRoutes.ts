@@ -14,6 +14,6 @@ type AppRouteKey = keyof typeof AppRouteKey;
 
 export const appRoutes: { [key in AppRouteKey]: AppRoute } = {
   Home: { href: '/', title: 'Home' },
-  Jobs: { href: '/jobs', title: 'Launched Jobs' },
-  Multiple: { href: '/learning/multiple', title: 'Multiple Datasets' },
+  Jobs: { href: '/jobs', title: 'Launched Matchings' },
+  Multiple: { href: '/learning/multiple', title: 'New Matching' },
 };
