@@ -44,7 +44,9 @@ const useStyles = createStyles((theme) => ({
     [theme.fn.largerThan('sm')]: { position: 'absolute', left: '16px' },
   },
 
-  links: { [theme.fn.smallerThan('xs')]: { marginTop: theme.spacing.md } },
+  links: {
+    [theme.fn.smallerThan('xs')]: { marginTop: theme.spacing.md },
+  },
 }));
 
 export const CustomFooter = () => {
@@ -59,7 +61,7 @@ export const CustomFooter = () => {
         <Container mx={0} px={0}>
           <Group className={classes.logoContainer}>
             <Group align="center">
-              <Text size="md" color="dimmed">
+              <Text size="xs" color="dimmed">
                 Powered by
               </Text>
               <Link href="https://feltlabs.ai/" passHref>
@@ -69,7 +71,7 @@ export const CustomFooter = () => {
               </Link>
               <Link href="https://delta-dao.com/" passHref>
                 <Group style={{ cursor: 'pointer' }}>
-                  <Image src="/assets/deltaDAO_Logo_RGB_positiv.svg" height={70} width={130} alt="Logo" />
+                  <Image src="/assets/deltaDAO_Logo_RGB_positiv.svg" height={90} width={150} alt="Logo" />
                 </Group>
               </Link>
             </Group>

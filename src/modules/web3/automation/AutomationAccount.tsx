@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import { useOceanConfig } from '@/modules/ocean';
 import { supportedChainIds, useWeb3 } from '@/modules/web3/';
+import { euroeTokenDetails } from '../../../../supportedTokens.config';
 import { useAutomation } from './AutomationContext';
 import { TopUpInputButton } from './TopUpInputButton';
 
@@ -30,8 +31,10 @@ export const AutomationAccount = () => {
 
   const [etherValue, setEtherValue] = useState<number>(0);
   const [oceanValue, setOceanValue] = useState<number>(0);
+  const [euroeValue, setEuroeValue] = useState<number>(0);
   const [etherAction, setEtherAction] = useState<ActionState>();
   const [oceanAction, setOceanAction] = useState<ActionState>();
+  const [euroeAction, setEuroeAction] = useState<ActionState>();
   const [withdrawAction, setWithdrawAction] = useState<ActionState>();
 
   const sendOcean = async () => {
@@ -60,6 +63,35 @@ export const AutomationAccount = () => {
       setOceanAction({ error: '' });
     } catch (error: any) {
       setOceanAction({ error: error.message });
+    }
+  };
+
+  const sendEuroe = async () => {
+    // TODO: We could maybe use allowance in the future rather then transfering tokens right away
+    setEuroeAction({ loading: true });
+
+    try {
+      if (!euroeValue) {
+        throw new Error('Value must be greater than 0.');
+      }
+
+      if (!web3 || !accountId || !euroeTokenDetails?.address || !automation.account) {
+        throw new Error('Unable to connect to main account.');
+      }
+
+      await transfer(
+        web3,
+        config,
+        accountId,
+        euroeTokenDetails.address,
+        automation.account?.address,
+        euroeValue.toString()
+      );
+      await automation.getBalance();
+
+      setEuroeAction({ error: '' });
+    } catch (error: any) {
+      setEuroeAction({ error: error.message });
     }
   };
 
@@ -109,6 +141,23 @@ export const AutomationAccount = () => {
           config,
           automation.account?.address,
           config.oceanTokenAddress,
+          accountId,
+          autoBalance.ocean
+        );
+
+        autoBalance = await automation.getBalance();
+        if (!autoBalance) {
+          throw new Error('Failed get balance');
+        }
+      }
+
+      // Transfer all EUROe to accountId (if balance greater than 0)
+      if (parseFloat(autoBalance.euroe) > 0) {
+        await transfer(
+          autoWeb3,
+          config,
+          automation.account?.address,
+          euroeTokenDetails.address,
           accountId,
           autoBalance.ocean
         );
@@ -184,7 +233,7 @@ export const AutomationAccount = () => {
         <Title order={4}>Balance</Title>
         <Text>
           <Text component="span" weight={500}>
-            Ether:{' '}
+            Network Token:{' '}
           </Text>
           {automation.balance?.eth ?? 'NaN'}
         </Text>
@@ -194,13 +243,19 @@ export const AutomationAccount = () => {
           </Text>
           {automation.balance?.ocean ?? 'NaN'}
         </Text>
+        <Text>
+          <Text component="span" weight={500}>
+            EUROe:{' '}
+          </Text>
+          {automation.balance?.euroe ?? 'NaN'}
+        </Text>
 
         <Divider my="sm" className={classes.divider} />
         <Title order={4}>Actions</Title>
         <Stack>
           <TopUpInputButton
-            label="Ether"
-            description="Top up ether for gas fees"
+            label="Network Token"
+            description="Top up network token for gas fees"
             value={etherValue}
             maxValue={Number(balance?.eth)}
             setValue={setEtherValue}
@@ -220,6 +275,17 @@ export const AutomationAccount = () => {
             error={oceanAction?.error}
             disabled={!web3}
           />
+          <TopUpInputButton
+            label="EUROe"
+            description="Top up EUROe"
+            value={euroeValue}
+            maxValue={Number(balance?.euroe)}
+            setValue={setEuroeValue}
+            onClick={sendEuroe}
+            loading={euroeAction?.loading}
+            error={euroeAction?.error}
+            disabled={!web3}
+          />
           <Divider my="sm" />
           <Stack spacing={5}>
             <Button
@@ -236,7 +302,7 @@ export const AutomationAccount = () => {
       </Modal>
 
       <Button size="md" onClick={() => modalHandler.open()}>
-        Automation
+        Auto-Sign on
       </Button>
     </>
   );

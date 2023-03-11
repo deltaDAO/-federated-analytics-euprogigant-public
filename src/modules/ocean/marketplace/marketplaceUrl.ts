@@ -1,1 +1,1 @@
-export const marketplaceUrl = 'https://market.oceanprotocol.com';
+export const marketplaceUrl = 'https://v4.minimal-gaia-x.eu';

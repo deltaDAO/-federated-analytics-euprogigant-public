@@ -1,9 +1,11 @@
 import { LoggerInstance } from '@oceanprotocol/lib';
 import { createContext, FC, useCallback, useContext, useEffect, useState } from 'react';
+import { euroeTokenDetails } from 'supportedTokens.config';
 import Web3 from 'web3';
 
 import { readFeltAutoKey, removeFeltAutoKey, writeFeltAutoKey } from '../../jobs/storage';
 import { getNodeWeb3, getOceanBalance } from '../../ocean';
+import { getTokenBalance } from '../utils/getTokenBalance';
 import { useWeb3 } from '../Web3Context';
 import { AutomationAccount, AutomationBalance, AutomationValues } from './Automation.types';
 
@@ -26,6 +28,7 @@ export const AutomationProvider: FC = ({ children }) => {
   const [balance, setBalance] = useState<AutomationBalance | undefined>({
     eth: '0',
     ocean: '0',
+    euroe: '0',
   });
 
   useEffect(() => {
@@ -111,6 +114,7 @@ export const AutomationProvider: FC = ({ children }) => {
       const balance = {
         eth: web3.utils.fromWei(await web3.eth.getBalance(account.address, 'latest')),
         ocean: await getOceanBalance(account.address, chainId, web3),
+        euroe: await getTokenBalance(account.address, euroeTokenDetails.decimals, euroeTokenDetails.address, web3),
       };
       setBalance(balance);
 

@@ -5,7 +5,7 @@ import { BreadcrumbsNavigation, HeadTitle, LinkCard } from '@/modules/common';
 
 const Home: NextPage = () => (
   <>
-    <HeadTitle title="Start Learning" />
+    <HeadTitle title="Federated Analytics" />
     <BreadcrumbsNavigation breadcrumbs={[appRoutes.Home]} />
 
     <div

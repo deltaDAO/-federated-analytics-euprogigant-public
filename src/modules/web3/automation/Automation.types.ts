@@ -3,6 +3,7 @@ import Web3 from 'web3';
 export interface AutomationBalance {
   eth: string;
   ocean: string;
+  euroe: string;
 }
 
 export interface AutomationAccount {

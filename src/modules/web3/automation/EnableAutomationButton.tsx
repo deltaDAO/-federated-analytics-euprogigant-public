@@ -38,7 +38,7 @@ export const EnableAutomationButton = () => {
         >
           <span>
             <Button onClick={create} size="md" variant="outline" disabled={!web3}>
-              {storedKey ? 'Activate Automation' : 'Add Automation'}
+              {storedKey ? 'Activate Auto-Sign' : 'Add Auto-Sign'}
             </Button>
           </span>
         </Tooltip>

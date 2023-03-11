@@ -7,12 +7,18 @@ import { CustomFooter } from '@/modules/footer';
 import { CustomHeader } from '@/modules/header';
 import { TransactionProvider } from '@/modules/transaction';
 import { AutomationProvider, Web3Provider } from '@/modules/web3';
-import { FundedBy } from '../fundedBy/FundedBy';
+import { FundedBy } from '../common/components/FundedBy/FundedBy';
+import { ProjectPartners } from '../common/components/ProjectPartners';
 
 const useStyles = createStyles((theme) => ({
   content: {
     background: '#F0F6FF',
     borderRadius: theme.radius.md,
+  },
+  banner: {
+    objectFit: 'contain',
+    width: '100%',
+    marginTop: theme.spacing.xl * 3,
   },
 }));
 
@@ -56,6 +62,16 @@ export const AppLayout: FC = ({ children }) => {
               <AppShell header={<CustomHeader />} footer={<CustomFooter />}>
                 <Container className={classes.content} size={layoutWidth} px="xl" py="xl">
                   {children}
+                  {router.pathname === '/' && (
+                    <>
+                      <img
+                        className={classes.banner}
+                        src="/assets/banner_EuProGigant.png"
+                        alt="Market-X promo banner"
+                      />
+                      <ProjectPartners />
+                    </>
+                  )}
                 </Container>
                 {router.pathname === '/' && <FundedBy />}
               </AppShell>

@@ -113,7 +113,7 @@ export const DatasetDetailContainer: FC<DatasetDetailContainerProps> = ({ did, s
           <b>Owner:</b> <LinkText href={`${marketplaceUrl}/profile/${asset.nft.owner}`} text={asset.nft.owner} />
         </span>
         <span>
-          <b>DID:</b> {did}
+          <b>DID:</b> <LinkText href={`${marketplaceUrl}/asset/${did}`} text={did} />
         </span>
         <span>
           <b>Created:</b> {dayjs(created).fromNow()}

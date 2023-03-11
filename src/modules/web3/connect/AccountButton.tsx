@@ -59,10 +59,13 @@ export const AccountButton = () => {
           {balance && (
             <>
               <p>
-                <b>Ether:</b> {balance.eth}
+                <b>Network Token:</b> {balance.eth}
               </p>
               <p>
                 <b>Ocean:</b> {balance.ocean}
+              </p>
+              <p>
+                <b>EUROe:</b> {balance.euroe}
               </p>
             </>
           )}

@@ -8,7 +8,7 @@ export interface HeadTitleProps {
 export const HeadTitle: FC<HeadTitleProps> = ({ title }) => {
   return (
     <Head>
-      <title>{title} | FELT</title>
+      <title>{title} | EuProGigant</title>
     </Head>
   );
 };

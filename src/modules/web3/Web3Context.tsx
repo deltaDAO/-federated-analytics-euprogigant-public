@@ -1,13 +1,16 @@
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { createContext, FC, useCallback, useContext, useEffect, useState } from 'react';
+import { euroeTokenDetails } from 'supportedTokens.config';
 import Web3 from 'web3';
 import Web3Modal, { getProviderInfo, IProviderInfo } from 'web3modal';
 
 import { getOceanBalance } from '@/modules/ocean';
+import { getTokenBalance } from './utils/getTokenBalance';
 
 interface UserBalance {
   eth: string;
   ocean: string;
+  euroe: string;
 }
 
 interface Web3ProviderValue {
@@ -67,6 +70,7 @@ export const Web3Provider: FC = ({ children }) => {
   const [balance, setBalance] = useState<UserBalance>({
     eth: '0',
     ocean: '0',
+    euroe: '0',
   });
   const [isSupportedOceanNetwork, setIsSupportedOceanNetwork] = useState(false);
 
@@ -115,6 +119,7 @@ export const Web3Provider: FC = ({ children }) => {
       const balance = {
         eth: web3.utils.fromWei(await web3.eth.getBalance(accountId, 'latest')),
         ocean: await getOceanBalance(accountId, chainId, web3),
+        euroe: await getTokenBalance(accountId, euroeTokenDetails.decimals, euroeTokenDetails.address, web3),
       };
       setBalance(balance);
       // console.log('[web3] Balance: ', balance);
