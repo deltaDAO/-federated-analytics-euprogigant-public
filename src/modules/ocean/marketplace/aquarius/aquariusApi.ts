@@ -4,7 +4,7 @@ import { AssetExtended } from '../../asset';
 import { useOceanConfig } from '../../config';
 import { getQuery } from './utils';
 
-import { whitelist } from '@artifacts/datasets.json';
+import algorithms from '@artifacts/algorithms.json';
 
 /* eslint-disable camelcase */
 
@@ -46,12 +46,18 @@ class AquariusApi {
             filter: [
               { term: { _index: this.chainId === 100 ? 'oceanv4' : 'aquarius' } },
               { term: { 'metadata.type': 'dataset' } },
-              { terms: { chainId: [1, 137, this.chainId] } },
+              { terms: { chainId: [this.chainId] } },
               { term: { 'purgatory.state': false } },
               //{ bool: { must_not: [{ term: { 'nft.state': 5 } }] } },
               { term: { 'nft.state': 0 } }, // must be active state
               { term: { 'services.type': 'compute' } },
-              { terms: { _id: whitelist } },
+              {
+                terms: {
+                  'services.compute.publisherTrustedAlgorithms.did': [
+                    ...Object.values(algorithms[100].federated).map((entry) => entry.assets.training),
+                  ],
+                },
+              },
             ],
           },
         },

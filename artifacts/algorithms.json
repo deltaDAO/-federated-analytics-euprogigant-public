@@ -5,9 +5,9 @@
         "id": "part-matching",
         "name": "Part Matching",
         "assets": {
-          "training": "did:op:f0b68b3ac85adb7c2f59803798ea2b0f1c524a7e790b7952124d305c20f08d97",
-          "aggregation": "did:op:746461279d924453fa819c7a4e72f9236a77512c0116fcd047fd2b84dd74c766",
-          "emptyDataset": "did:op:9c544f33b57541ca70297d597fc15a5a3dabf745c8bf90795d4e3b99875b954b"
+          "training": "did:op:ca69686d534777405c8cb0a4437bca408a3f8bd1e479d429beed64b9f932b69f",
+          "aggregation": "did:op:adb67df12b41a4089e0d3f4933bab5254bb905657b92b35bcd1cbcefc836fee5",
+          "emptyDataset": "did:op:f72ac5c25f90b39ed14c4daa048606ca2847171965a60b0131bf1184cf9aaf49"
         },
         "hasParameters": true
       }
