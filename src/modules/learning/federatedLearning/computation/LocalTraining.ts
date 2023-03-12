@@ -50,6 +50,10 @@ export class LocalTraining {
     const computeJob = await this.C2D.startCompute();
     console.groupEnd();
 
+    if (computeJob === null) {
+      throw new Error('Failed to start compute job. Compute job is null');
+    }
+
     const job: TrainingComputeJob = {
       computeJob,
       seed: this.seed,
