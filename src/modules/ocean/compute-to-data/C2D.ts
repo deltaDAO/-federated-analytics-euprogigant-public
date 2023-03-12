@@ -13,13 +13,13 @@ import {
   ProviderComputeInitialize,
   ProviderComputeInitializeResults,
   ProviderInstance,
-  sleep
+  sleep,
 } from '@oceanprotocol/lib';
 import Web3 from 'web3';
 
 import { AssetExtended } from '../asset';
 import { getNodeWeb3 } from '../getNodeWeb3';
-import { getAssetWithAccessDetails, getOrderPriceAndFees } from '../marketplace';
+import { getAccessDetailsForAssets, getOrderPriceAndFees } from '../marketplace';
 import { checkProviderVersion, computeStart } from './computeProviderApi';
 import { getAssetComputeProviderUrl } from './getAssetComputeProviderUrl';
 
@@ -72,11 +72,11 @@ export class C2D {
     checkProviderVersion(this.providerUrl);
 
     // resolve DDOs from aquarius
-    this.resolvedAlgoDDO = await getAssetWithAccessDetails(
+    this.resolvedAlgoDDO = await getAccessDetailsForAssets(
       await this.aquarius.waitForAqua(this.algoDID),
       this.accountId
     );
-    this.resolvedDataDDO = await getAssetWithAccessDetails(
+    this.resolvedDataDDO = await getAccessDetailsForAssets(
       await this.aquarius.waitForAqua(this.dataDID),
       this.accountId
     );
@@ -111,7 +111,7 @@ export class C2D {
       transferTxId: this.resolvedAlgoDDO.accessDetails?.validOrderTx,
       algocustomdata: this.algoData,
     };
-
+    console.log(this.accountId);
     this.providerInitializeComputeResults = await ProviderInstance.initializeCompute(
       this.assets,
       this.algo,
@@ -222,7 +222,7 @@ export class C2D {
     if (order?.providerFee?.providerFeeAmount !== '0') {
       const baseToken =
         ddo.accessDetails?.type === 'free' ? this.config.oceanTokenAddress : ddo.accessDetails?.baseToken.address;
-      if (!baseToken) throw new Error('Failed to get Ocean base token address.');
+      if (!baseToken) throw new Error('Failed to get base token address.');
       const txApproveProvider = await approveWei(
         this.web3,
         this.config,
@@ -243,7 +243,7 @@ export class C2D {
         order.providerFee
       );
       if (!txReuseOrder) throw new Error('Failed to reuse order!');
-
+      console.log('Reusing order', { txReuseOrder });
       return txReuseOrder?.transactionHash;
     }
 
@@ -285,7 +285,6 @@ export class C2D {
     consumeMarkerFee?: ConsumeMarketFee
   ) => {
     if (order.providerFee === undefined) throw new Error('Undefined token for paying fees.');
-
     const orderParams: OrderParams = {
       consumer: consumerAccount,
       serviceIndex: serviceIndex,
@@ -302,28 +301,31 @@ export class C2D {
         if (!this.config.fixedRateExchangeAddress)
           throw new Error('Undefined exchange address - unable to purchase data token.');
 
-        const orderPriceAndFees = await getOrderPriceAndFees(ddo, order.providerFee);
+        const orderPriceAndFees = await getOrderPriceAndFees(ddo, this.accountId, order.providerFee);
         const providerFeeToken = order.providerFee.providerFeeToken;
 
         // this assumes that token has 18 decimals
         // Retry transaction 3 times
-        await this.retryTransaction(
-          async () =>
-            this.datatoken.approve(
-              providerFeeToken,
-              datatokenAddress,
-              await amountToUnits(this.web3, providerFeeToken, orderPriceAndFees.price, 18),
-              payerAccount
+        await this.retryTransaction(async () => {
+          return this.datatoken.approve(
+            ddo.accessDetails?.baseToken.address || providerFeeToken,
+            datatokenAddress,
+            await amountToUnits(
+              this.web3,
+              ddo.accessDetails?.baseToken.address || providerFeeToken,
+              orderPriceAndFees.price,
+              ddo.accessDetails?.baseToken.decimals
             ),
-          3
-        );
+            payerAccount
+          );
+        }, 3);
 
         const freParams: FreOrderParams = {
           exchangeContract: this.config.fixedRateExchangeAddress,
           exchangeId: ddo.accessDetails.addressOrId,
           maxBaseTokenAmount: orderPriceAndFees.price,
-          baseTokenAddress: order.providerFee?.providerFeeToken,
-          baseTokenDecimals: 18, // TODO: Here we assume 18 decimal token, might not be the case
+          baseTokenAddress: ddo.accessDetails.baseToken.address,
+          baseTokenDecimals: ddo.accessDetails.baseToken.decimals,
           swapMarketFee: '0',
           marketFeeAddress: '0x0000000000000000000000000000000000000000',
         };

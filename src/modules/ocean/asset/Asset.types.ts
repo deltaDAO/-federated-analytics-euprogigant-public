@@ -7,7 +7,7 @@ import { Asset, ProviderFees } from '@oceanprotocol/lib';
  * @prop {string} symbol - symbol representing token
  * @prop {number} decimals - number of decimals used by token
  */
-interface TokenInfo {
+export interface TokenInfo {
   address: string;
   name: string;
   symbol: string;

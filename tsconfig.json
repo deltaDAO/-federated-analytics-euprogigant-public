@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
-    "strictNullChecks": true,
+    "strict": false,
     "strictFunctionTypes": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,

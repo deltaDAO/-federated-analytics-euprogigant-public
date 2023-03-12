@@ -8,6 +8,7 @@ import { useQuery } from 'react-query';
 
 import { LinkText, Markdown } from '@/modules/common';
 import { marketplaceUrl, useAquariusApi } from '@/modules/ocean/marketplace';
+import { AssetPricing } from '../../AssetPricing';
 
 dayjs.extend(relativeTime);
 
@@ -34,10 +35,9 @@ export const DatasetDetailContainer: FC<DatasetDetailContainerProps> = ({ did, s
   // const accessType = isCompute ? 'compute' : 'access';
   const { owner } = asset.nft;
   const { orders, allocated, price } = asset.stats;
-  const isUnsupportedPricing =
-    !asset.services.length ||
-    asset?.stats?.price?.value === undefined ||
-    asset?.accessDetails?.type === 'NOT_SUPPORTED';
+  // const isUnsupportedPricing = !asset.services.length ||
+  //   asset?.stats?.price?.value === undefined ||
+  //   asset?.accessDetails?.type === 'NOT_SUPPORTED';
 
   return (
     <Card
@@ -75,13 +75,7 @@ export const DatasetDetailContainer: FC<DatasetDetailContainerProps> = ({ did, s
         color="dimmed"
         sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}
       >
-        <div>
-          {isUnsupportedPricing ? (
-            <strong>No pricing schema available</strong>
-          ) : (
-            `${price.value || 'Free'} ${price.tokenSymbol || ''}`
-          )}
-        </div>
+        <AssetPricing asset={asset} />
         {allocated && allocated > 0 ? (
           <span>
             {allocated < 0 ? (

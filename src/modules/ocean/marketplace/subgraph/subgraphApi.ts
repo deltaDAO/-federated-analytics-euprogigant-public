@@ -18,7 +18,7 @@ function createUrqlClient() {
   return client;
 }
 
-function getQueryContext(chainId: number): OperationContext {
+export function getQueryContext(chainId: number): OperationContext {
   const queryContext: OperationContext = {
     url: `${getSubgraphUri(Number(chainId))}/subgraphs/name/oceanprotocol/ocean-subgraph`,
     requestPolicy: 'network-only',
@@ -27,17 +27,14 @@ function getQueryContext(chainId: number): OperationContext {
   return queryContext;
 }
 
-export async function fetchData(query: TypedDocumentNode, variables: any, chainId: number): Promise<any> {
+export async function fetchData(query: TypedDocumentNode, variables: any, context: OperationContext): Promise<any> {
   try {
     const client = createUrqlClient();
-    const context = getQueryContext(chainId);
 
     const response = await client.query(query, variables, context).toPromise();
-
     return response;
   } catch (error) {
-    console.log('Error fetchData: ', error);
+    console.error('Error fetchData: ', (error as Error).message);
   }
-
   return null;
 }

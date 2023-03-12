@@ -1,18 +1,127 @@
-import { Asset, FixedRateExchange, PriceAndFees, ProviderFees, ZERO_ADDRESS } from '@oceanprotocol/lib';
+import { Asset, ProviderFees, ProviderInstance } from '@oceanprotocol/lib';
 import Decimal from 'decimal.js';
-import { OperationResult } from 'urql';
-import Web3 from 'web3';
+import { gql, OperationResult } from 'urql';
 
-import { AccessDetails, AssetExtended, getOceanConfig, OrderPriceAndFees } from '../..';
+import { TokenPriceQuery, TokenPriceQuery_token as TokenPrice } from '../../../../types/subgraph/TokenPriceQuery';
+import { TokensPriceQuery, TokensPriceQuery_tokens as TokensPrice } from '../../../../types/subgraph/TokensPriceQuery';
+import { AccessDetails, AssetExtended, OrderPriceAndFees } from '../..';
 import { getNodeWeb3 } from '../../getNodeWeb3';
+import { getFixedBuyPrice } from './fixedRateExchange';
 import { getTokenPriceQuery } from './queries/getTokenPriceQuery';
-import { fetchData } from './subgraphApi';
+import { fetchData, getQueryContext } from './subgraphApi';
 
 // TODO: define correct types
-type TokenPrice = any;
-type TokenPriceQuery = any;
 
-function getAccessDetailsFromTokenPrice(tokenPrice: TokenPrice, timeout = 0): AccessDetails {
+const tokensPriceQuery = gql`
+  query TokensPriceQuery($datatokenIds: [ID!], $account: String) {
+    tokens(first: 1000, where: { id_in: $datatokenIds }) {
+      id
+      symbol
+      name
+      publishMarketFeeAddress
+      publishMarketFeeToken
+      publishMarketFeeAmount
+      templateId
+      orders(where: { payer: $account }, orderBy: createdTimestamp, orderDirection: desc) {
+        tx
+        serviceIndex
+        createdTimestamp
+        reuses(orderBy: createdTimestamp, orderDirection: desc) {
+          id
+          caller
+          createdTimestamp
+          tx
+          block
+        }
+      }
+      dispensers {
+        id
+        active
+        isMinter
+        maxBalance
+        token {
+          id
+          name
+          symbol
+        }
+      }
+      fixedRateExchanges {
+        id
+        exchangeId
+        price
+        publishMarketSwapFee
+        baseToken {
+          symbol
+          name
+          address
+          decimals
+        }
+        datatoken {
+          symbol
+          name
+          address
+        }
+        active
+      }
+    }
+  }
+`;
+const tokenPriceQuery = gql`
+  query TokenPriceQuery($datatokenId: ID!, $account: String) {
+    token(id: $datatokenId) {
+      id
+      symbol
+      name
+      templateId
+      publishMarketFeeAddress
+      publishMarketFeeToken
+      publishMarketFeeAmount
+      orders(where: { payer: $account }, orderBy: createdTimestamp, orderDirection: desc) {
+        tx
+        serviceIndex
+        createdTimestamp
+        reuses(orderBy: createdTimestamp, orderDirection: desc) {
+          id
+          caller
+          createdTimestamp
+          tx
+          block
+        }
+      }
+      dispensers {
+        id
+        active
+        isMinter
+        maxBalance
+        token {
+          id
+          name
+          symbol
+        }
+      }
+      fixedRateExchanges {
+        id
+        exchangeId
+        price
+        publishMarketSwapFee
+        baseToken {
+          symbol
+          name
+          address
+          decimals
+        }
+        datatoken {
+          symbol
+          name
+          address
+        }
+        active
+      }
+    }
+  }
+`;
+
+function getAccessDetailsFromTokenPrice(tokenPrice: TokenPrice | TokensPrice, timeout?: number): AccessDetails {
   const accessDetails = {} as AccessDetails;
 
   // Return early when no supported pricing schema found.
@@ -80,7 +189,8 @@ function getAccessDetailsFromTokenPrice(tokenPrice: TokenPrice, timeout = 0): Ac
  */
 export async function getOrderPriceAndFees(
   asset: AssetExtended,
-  providerFees: ProviderFees
+  accountId?: string,
+  providerFees?: ProviderFees
 ): Promise<OrderPriceAndFees> {
   const orderPriceAndFee = {
     price: '0',
@@ -88,11 +198,23 @@ export async function getOrderPriceAndFees(
     publisherMarketFixedSwapFee: '0',
     consumeMarketOrderFee: '0',
     consumeMarketFixedSwapFee: '0',
-    providerFee: { providerFeeAmount: '0' },
+    providerFee: {
+      providerFeeAmount: '0',
+    },
     opcFee: '0',
   } as OrderPriceAndFees;
 
-  orderPriceAndFee.providerFee = providerFees;
+  // fetch provider fee
+  const initializeData =
+    !providerFees &&
+    (await ProviderInstance.initialize(
+      asset?.id,
+      asset?.services[0].id,
+      0,
+      accountId,
+      asset?.services[0].serviceEndpoint
+    ));
+  orderPriceAndFee.providerFee = providerFees || initializeData.providerFee;
 
   // fetch price and swap fees
   if (asset?.accessDetails?.type === 'fixed') {
@@ -119,71 +241,68 @@ export async function getOrderPriceAndFees(
  * @param {string} account account that wants to buy, is needed to return order details
  * @returns {Promise<AccessDetails>}
  */
-async function getAccessDetails(
+export async function getAccessDetails(
   chainId: number,
   datatokenAddress: string,
   timeout?: number,
   account = ''
-): Promise<AccessDetails> {
-  const tokenQueryResult: OperationResult<TokenPriceQuery, { datatokenId: string; account: string }> = await fetchData(
-    getTokenPriceQuery,
-    {
-      datatokenId: datatokenAddress.toLowerCase(),
-      account: account?.toLowerCase(),
-    },
-    chainId
-  );
+): Promise<AccessDetails | undefined> {
+  try {
+    const queryContext = getQueryContext(Number(chainId));
+    const tokenQueryResult: OperationResult<TokenPriceQuery, { datatokenId: string; account: string }> =
+      await fetchData(
+        tokenPriceQuery,
+        {
+          datatokenId: datatokenAddress.toLowerCase(),
+          account: account?.toLowerCase(),
+        },
+        queryContext
+      );
 
-  const tokenPrice: TokenPrice = tokenQueryResult.data.token;
-  const accessDetails = getAccessDetailsFromTokenPrice(tokenPrice, timeout);
-
-  return accessDetails;
-}
-
-// Added extra compared to original market file
-/**
- * @param {Asset} ddo which should be extended with access details
- * @param {string} accountId address of account for which we check access details
- * @returns {Promise<AssetExtended>}
- */
-export async function getAssetWithAccessDetails(
-  ddo: Asset & { accessDetails?: AccessDetails },
-  accountId: string = ZERO_ADDRESS
-): Promise<AssetExtended> {
-  // TODO: Sometimes there are accessDetails from aquarius already, but values seems outdated
-  ddo.accessDetails = await getAccessDetails(
-    ddo.chainId,
-    ddo.services[0].datatokenAddress,
-    ddo.services[0].timeout,
-    accountId
-  );
-
-  return ddo;
-}
-
-/**
- * This is used to calculate the price to buy one datatoken from a fixed rate exchange. You need to pass either a web3
- * object or a chainId. If you pass a chainId a dummy web3 object will be created
- * @param {AccessDetails} accessDetails
- * @param {number} chainId
- * @param {Web3?} web3
- * @return {Promise<PriceAndFees>}
- */
-export async function getFixedBuyPrice(accessDetails: AccessDetails, chainId = 1, web3?: Web3): Promise<PriceAndFees> {
-  if (!web3 && !chainId) throw new Error("web3 and chainId can't be undefined at the same time!");
-
-  if (!web3) {
-    web3 = getNodeWeb3(chainId);
+    const tokenPrice: TokenPrice = tokenQueryResult.data.token;
+    const accessDetails = getAccessDetailsFromTokenPrice(tokenPrice, timeout);
+    return accessDetails;
+  } catch (error) {
+    console.error('Error getting access details: ', error);
   }
+}
 
-  const config = getOceanConfig(chainId);
-  if (!config.fixedRateExchangeAddress) throw new Error('Undefined fexed rate exchange address');
+export async function getAccessDetailsForAssets(assets: Asset, account = ''): Promise<AssetExtended | undefined> {
+  const assetsExtended: AssetExtended[] = [assets];
+  const chainAssetLists: { [key: number]: string[] } = {};
 
-  const fixed = new FixedRateExchange(config.fixedRateExchangeAddress, web3);
-  const estimatedPrice = await fixed.calcBaseInGivenDatatokensOut(
-    accessDetails.addressOrId,
-    '1',
-    '0' // TODO: might need to set here - consumeMarketFixedSwapFee
-  );
-  return estimatedPrice;
+  try {
+    for (const asset of [assets]) {
+      if (chainAssetLists[asset.chainId]) {
+        chainAssetLists[asset.chainId].push(asset.services[0].datatokenAddress.toLowerCase());
+      } else {
+        chainAssetLists[asset.chainId] = [];
+        chainAssetLists[asset.chainId].push(asset.services[0].datatokenAddress.toLowerCase());
+      }
+    }
+
+    for (const chainKey in chainAssetLists) {
+      const queryContext = getQueryContext(Number(chainKey));
+      const tokenQueryResult: OperationResult<TokensPriceQuery, { datatokenIds: [string]; account: string }> =
+        await fetchData(
+          tokensPriceQuery,
+          {
+            datatokenIds: chainAssetLists[chainKey],
+            account: account?.toLowerCase(),
+          },
+          queryContext
+        );
+      tokenQueryResult?.data?.tokens?.forEach((token) => {
+        const currentAsset = assetsExtended.find(
+          (asset) => asset.services[0].datatokenAddress.toLowerCase() === token.id
+        );
+        const accessDetails = getAccessDetailsFromTokenPrice(token, currentAsset?.services[0]?.timeout);
+
+        currentAsset.accessDetails = accessDetails;
+      });
+    }
+    return assetsExtended[0];
+  } catch (error) {
+    console.error('Error getting access details: ', error);
+  }
 }

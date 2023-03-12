@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { FC, MouseEvent, useState } from 'react';
 
 import { shortenAddress } from '@/modules/web3';
+import { AssetPricing } from '../../AssetPricing';
 import { DatasetDetailContainer } from '../DatasetDetailContainer';
 
 export interface DatasetPreviewProps {
@@ -27,16 +28,18 @@ export function getServiceByName(ddo: Asset, name: 'access' | 'compute'): any {
 
 export const DatasetPreview: FC<DatasetPreviewProps> = ({ asset, assetSelection, opensLinkInModal }) => {
   const { hovered, ref } = useHover();
+  const [detailOpenedInModal, setDetailOpenedInModal] = useState<boolean>(false);
+
   if (!asset || !asset.metadata) return null;
+
   const { name, type, description } = asset.metadata;
   const { datatokens } = asset;
   // const isCompute = Boolean(getServiceByName(asset, 'compute'));
   // const accessType = isCompute ? 'compute' : 'access';
   const { owner } = asset.nft;
-  const { orders, allocated, price } = asset.stats;
-  const isUnsupportedPricing = !asset.services.length || asset?.stats?.price?.value === undefined;
+  const { orders, allocated } = asset.stats;
 
-  const [detailOpenedInModal, setDetailOpenedInModal] = useState<boolean>(false);
+  //const isUnsupportedPricing = !asset.services.length || asset?.stats?.price?.value === undefined;
 
   return (
     <>
@@ -123,13 +126,7 @@ export const DatasetPreview: FC<DatasetPreviewProps> = ({ asset, assetSelection,
             color="dimmed"
             sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}
           >
-            <div>
-              {isUnsupportedPricing ? (
-                <strong>No pricing schema available</strong>
-              ) : (
-                `${price.value || 'Free'} ${price.tokenSymbol || ''}`
-              )}
-            </div>
+            <AssetPricing asset={asset} />
             <footer>
               {allocated && allocated > 0 ? (
                 <span>
