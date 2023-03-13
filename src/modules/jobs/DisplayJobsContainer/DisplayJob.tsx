@@ -37,7 +37,7 @@ export const DisplayJob: FC<DisplayJobProps> = ({ job, onReload }) => {
       if (computeJob !== null) {
         if (isJobRunning(computeJob)) {
           promises.push(
-            getJobStatus(config, accountId, computeJob.jobId, did).then((res) => {
+            getJobStatus(config, job.accountId, computeJob.jobId, did).then((res) => {
               const checked = checkForModel(res);
               if (checked !== null) updateLocalTrainingComputeJob(job.id, did, checked);
               if (checked?.status === 70) excludeInAggregationHandlers.filter((d) => d !== did);
@@ -51,7 +51,7 @@ export const DisplayJob: FC<DisplayJobProps> = ({ job, onReload }) => {
       if (computeJob !== null) {
         if (isJobRunning(computeJob)) {
           promises.push(
-            getJobStatus(config, accountId, computeJob.jobId, computeJob.algoDID).then((res) => {
+            getJobStatus(config, job.accountId, computeJob.jobId, computeJob.algoDID).then((res) => {
               const checked = checkForModel(res);
               if (checked !== null) updateAggregationComputeJob(job.id, id, checked);
             })
