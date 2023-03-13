@@ -7,7 +7,7 @@ import { AlertCircle } from 'react-feather';
 import { useLocalTraining } from '@/modules/learning';
 import { ConnectGate, useDefaultAccount, useWeb3 } from '@/modules/web3';
 import { AlgorithmConfig } from '../../jobs/computation/algorithms';
-import { addNewFeltJob, removeFeltJob } from '../../jobs/storage';
+import { addNewFeltJob, removeDataDidFromFeltJob, removeFeltJob } from '../../jobs/storage';
 import { PickAlgorithm } from './PickAlgorithm';
 import { PickDatasets } from './PickDatasets';
 import { PickParams } from './PickParams/PickParams';
@@ -77,7 +77,18 @@ export const CommonLearningContainer: FC = () => {
 
         try {
           for (const dataDid of didsValues) {
-            await localTraining(dataDid, algorithmSelected.algoConfig.assets.training, params, feltJobId);
+            try {
+              await localTraining(dataDid, algorithmSelected.algoConfig.assets.training, params, feltJobId);
+            } catch (err) {
+              console.error('Failed ordering local training:', {
+                dataDid,
+                algoDid: algorithmSelected.algoConfig.assets.training,
+                feltJobId,
+                err,
+              });
+              removeDataDidFromFeltJob(feltJobId, dataDid);
+              continue;
+            }
           }
         } catch (err: any) {
           removeFeltJob(feltJobId);
