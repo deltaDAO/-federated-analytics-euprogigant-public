@@ -100,7 +100,7 @@ export const checkForModel = (job: ComputeJob | null): ComputeJob | null => {
   return {
     ...job,
     status: 71,
-    statusText: 'Model not found',
+    statusText: 'Job failed',
   };
 };
 
