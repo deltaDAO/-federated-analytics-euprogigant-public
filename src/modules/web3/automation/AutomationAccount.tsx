@@ -159,7 +159,7 @@ export const AutomationAccount = () => {
           automation.account?.address,
           euroeTokenDetails.address,
           accountId,
-          autoBalance.ocean
+          autoBalance.euroe
         );
 
         autoBalance = await automation.getBalance();
@@ -168,8 +168,11 @@ export const AutomationAccount = () => {
         }
       }
 
+      // Introduce timeout to get the correct Network Token balance
+      await new Promise((res) => setTimeout(res, 5000));
+
       // Transfer all remaining ether to accountId
-      const ethBalance = toBN(web3.utils.toWei(autoBalance.eth, 'ether'));
+      const ethBalance = toBN(await web3.eth.getBalance(automation.account?.address, 'latest'));
 
       const txConfig = {
         from: automation.account.address,
@@ -180,7 +183,7 @@ export const AutomationAccount = () => {
       const gasPrice = toBN(await web3.eth.getGasPrice());
 
       if (estimatedGas.mul(gasPrice).gt(ethBalance)) {
-        throw new Error('Ether balance is too low for withdraw.');
+        throw new Error('Network Token balance is too low for withdraw.');
       }
 
       const txFinalConfig = {
