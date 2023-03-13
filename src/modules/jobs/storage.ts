@@ -55,6 +55,16 @@ export const removeFeltJob = (feltJobId: string) =>
     return updated;
   });
 
+export const removeDataDidFromFeltJob = (feltJobId: string, dataDID: string) => {
+  return updateFeltJobs((jobs) => ({
+    ...jobs,
+    [feltJobId]: {
+      ...jobs[feltJobId],
+      dataDIDs: jobs[feltJobId].dataDIDs.filter((did) => did !== dataDID),
+    },
+  }));
+};
+
 export const addLocalTraining = (feltJobId: string, dataDID: string, result: TrainingComputeJob) => {
   return updateFeltJobs((jobs) => ({
     ...jobs,
