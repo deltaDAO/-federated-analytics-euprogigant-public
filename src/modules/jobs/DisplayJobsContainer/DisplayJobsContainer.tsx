@@ -1,8 +1,10 @@
 import { Accordion, createStyles, Text } from '@mantine/core';
 import { useCallback, useEffect, useState } from 'react';
 
+import { useWeb3 } from '@/modules/web3';
+import { demoJobsList } from '../../../../demoJobsList';
 import { FeltJobs } from '../FeltJob.types';
-import { readFeltJobs, removeFeltJob } from '../storage';
+import { addNewFeltJob, readFeltJobs, removeFeltJob } from '../storage';
 import { AccordionLabel } from './AccordionLabel';
 import { DisplayJob } from './DisplayJob';
 
@@ -15,6 +17,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export const DisplayJobsContainer = () => {
+  const { accountId } = useWeb3();
   const { classes } = useStyles();
   const [jobs, setJobs] = useState<FeltJobs>({});
 
@@ -29,8 +32,18 @@ export const DisplayJobsContainer = () => {
   );
 
   const reloadJobsFromStorage = useCallback(() => {
+    const demoJobs = demoJobsList[accountId] || demoJobsList[accountId?.toLowerCase()];
+    const localStorageJobs = readFeltJobs();
+
+    if (demoJobs) {
+      Object.keys(demoJobs).forEach((jobId) => {
+        if (localStorageJobs[jobId]) return;
+
+        addNewFeltJob(demoJobs[jobId]);
+      });
+    }
     setJobs(readFeltJobs());
-  }, []);
+  }, [accountId]);
 
   useEffect(() => {
     reloadJobsFromStorage();
