@@ -88,8 +88,11 @@ export class C2D {
 
     // get compute environments and choose the first one
     const computeEnvs = await ProviderInstance.getComputeEnvironments(this.providerUrl);
-    if (computeEnvs.length === 0) throw new Error('No compute environment');
-    this.computeEnv = computeEnvs[0];
+    const computeEnv = Array.isArray(computeEnvs) ? computeEnvs[0] : computeEnvs[this.config.chainId][0];
+
+    if (!computeEnv) throw new Error('No compute environment');
+
+    this.computeEnv = computeEnv;
     console.log('compute env:', this.computeEnv);
 
     const validUntil = getValidUntilTime(
